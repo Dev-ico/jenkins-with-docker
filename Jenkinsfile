@@ -17,7 +17,6 @@ pipeline {
             }
             steps {
 		sh 'docker build -t devaico/train-schedule:latest .'
-                }
             }
         }
         stage('Push Docker Image') {
@@ -27,7 +26,7 @@ pipeline {
             steps {
 		sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh 'docker push devico/train-schedule:${env.BUILD_NUMBER}'
-			}
+            }
         }
         stage('DeployToStaging') {
             when {
