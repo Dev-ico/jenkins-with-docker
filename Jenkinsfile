@@ -14,7 +14,6 @@ pipeline {
             }
             steps {
                 script {
-                    sh 'd=$(date +%F_%H%M)'
                     app = docker.build("devico/train-schedule:$d")
                     app.inside {
                         sh 'echo $(curl localhost:8080)'
@@ -30,7 +29,7 @@ pipeline {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', 'docker_hub_login') {
                         app.push("${env.BUILD_NUMBER}")
-                        app.push("$d")
+                        app.push("latest")
                     }
                 }
             }
