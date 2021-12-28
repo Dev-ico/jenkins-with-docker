@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-		DOCKERHUB_CREDENTIALS=credentials('docker_hub_login')
+	    DOCKERHUB_CREDENTIALS=credentials('docker_hub_login')
 	}
     stages {
         stage('Build') {
@@ -16,11 +16,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                script {
-                    app = docker.build("devaico/train-schedule:${env.BUILD_NUMBER}")
-                    app.inside {
-                        sh 'echo $(curl localhost:8080)'
-                    }
+		sh 'docker build -t devaico/train-schedule:latest .'
                 }
             }
         }
@@ -29,7 +25,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-				sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+		sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh 'docker push devico/train-schedule:${env.BUILD_NUMBER}'
 			}
         }
