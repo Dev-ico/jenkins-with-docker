@@ -2,7 +2,7 @@ pipeline {
     agent { label 'master' }
     environment {
 	    DOCKERHUB_CREDENTIALS=credentials('docker_hub_login')
-        d = "$(date +%y%m%d-%H%M)"
+	    d = "${date +%y%m%d-%H%M}"
 	}
     stages {
         stage('Build') {
