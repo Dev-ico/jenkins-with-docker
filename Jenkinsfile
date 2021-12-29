@@ -35,14 +35,14 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
-                        sh 'echo "docker pull devaico/train-schedule:${env.BUILD_NUMBER}" | sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging'
+                        sh "sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging \"docker pull devaico/train-schedule:${env.BUILD_NUMBER}\""
                         try {
                             sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker stop train-schedule"'
                             sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker rm train-schedule"'
                         } catch (err) {
                             echo: 'caught error: $err'
                         }
-                        sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker run --restart always --name train-schedule -p 8080:8080 -d devaico/train-schedule:${env.BUILD_NUMBER}"'
+                        sh "sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging \"docker run --restart always --name train-schedule -p 8080:8080 -d devaico/train-schedule:${env.BUILD_NUMBER}\""
                     }
                 }
             }
