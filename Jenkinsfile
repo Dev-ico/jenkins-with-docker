@@ -37,6 +37,7 @@ pipeline {
                 branch 'master'
             }
             steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh "docker pull devaico/train-schedule:${env.BUILD_NUMBER}"
                 script {
                     try {
@@ -58,6 +59,7 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
                 sh "docker pull devaico/train-schedule:${env.BUILD_NUMBER}"
                 script {
                     try {
