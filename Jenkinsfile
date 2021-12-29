@@ -2,6 +2,7 @@ pipeline {
     agent { label 'master' }
     environment {
 	    DOCKERHUB_CREDENTIALS=credentials('docker_hub_login')
+        d = "$(date +%y%m%d-%H%M)"
 	}
     stages {
         stage('Build') {
@@ -16,7 +17,6 @@ pipeline {
                 branch 'master'
             }
             steps {
-                sh 'd=$(date +%y%m%d-%H%M)'
 		        sh 'docker build -t devaico/train-schedule:$d .'
             }
         }
