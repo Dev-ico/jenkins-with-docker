@@ -1,11 +1,10 @@
 pipeline {
-    agent any
+    agent { label 'master' }
     environment {
 	    DOCKERHUB_CREDENTIALS=credentials('docker_hub_login')
 	}
     stages {
         stage('Build Code') {
-            agent { label 'master' }
             steps {
                 echo 'Running build automation'
                 sh './gradlew build --no-daemon'
@@ -13,7 +12,6 @@ pipeline {
             }
         }
         stage('Build Docker Image') {
-            agent { label 'master' }
             when {
                 branch 'master'
             }
@@ -22,7 +20,6 @@ pipeline {
             }
         }
         stage('Push Docker Image') {
-            agent { label 'master' }
             when {
                 branch 'master'
             }
