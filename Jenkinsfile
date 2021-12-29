@@ -16,7 +16,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-		        sh 'docker build -t devaico/train-schedule:${env.BUILD_NUMBER} .'
+		        sh "docker build -t devaico/train-schedule:${env.BUILD_NUMBER} ."
             }
         }
         stage('Push Docker Image') {
@@ -25,7 +25,7 @@ pipeline {
             }
             steps {
 		        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push devaico/train-schedule:${env.BUILD_NUMBER}'
+                sh "docker push devaico/train-schedule:${env.BUILD_NUMBER}"
             }
         }
         stage('DeployToStaging') {
@@ -35,7 +35,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
-                        sh 'echo "docker pull devaico/train-schedule:${env.BUILD_NUMBER}" | sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging'
+                        sh "echo "docker pull devaico/train-schedule:${env.BUILD_NUMBER}" | sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging"
                         try {
                             sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker stop train-schedule"'
                             sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker rm train-schedule"'
