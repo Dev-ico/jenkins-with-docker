@@ -38,12 +38,14 @@ pipeline {
             }
             steps {
                 sh "docker pull devaico/train-schedule:${env.BUILD_NUMBER}"
-                try {
-                    sh "docker stop train-schedule"
-                    sh "docker rm train-schedule"
-                }
-                catch (err) {
+                script {
+                    try {
+                        sh "docker stop train-schedule"
+                        sh "docker rm train-schedule"
+                    }
+                    catch (err) {
                     echo: 'caught error: $err'
+                    }
                 }
                 sh "docker run --restart always --name train-schedule -p 8080:8080 -d devaico/train-schedule:${env.BUILD_NUMBER}"
             }
@@ -57,12 +59,14 @@ pipeline {
                 input 'Deploy to Production?'
                 milestone(1)
                 sh "docker pull devaico/train-schedule:${env.BUILD_NUMBER}"
-                try {
-                    sh "docker stop train-schedule"
-                    sh "docker rm train-schedule"
-                }
-                catch (err) {
-                            echo: 'caught error: $err'
+                script {
+                    try {
+                        sh "docker stop train-schedule"
+                        sh "docker rm train-schedule"
+                    }
+                    catch (err) {
+                    echo: 'caught error: $err'
+                    }
                 }
                 sh "docker run --restart always --name train-schedule -p 8080:8080 -d devaico/train-schedule:${env.BUILD_NUMBER}"
             }
