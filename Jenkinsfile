@@ -16,7 +16,8 @@ pipeline {
                 branch 'master'
             }
             steps {
-		sh 'docker build -t devaico/train-schedule:latest .'
+                sh 'd=$(date +%y%m%d-%H%M)'
+		        sh 'docker build -t devaico/train-schedule:$d .'
             }
         }
         stage('Push Docker Image') {
@@ -24,8 +25,8 @@ pipeline {
                 branch 'master'
             }
             steps {
-		sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push devico/train-schedule:${env.BUILD_NUMBER}'
+		        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'docker push devaico/train-schedule:$d'
             }
         }
         stage('DeployToStaging') {
@@ -35,14 +36,14 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging \"docker pull devaico/train-schedule:${env.BUILD_NUMBER}\""
+                        sh 'echo "docker pull devaico/train-schedule:$d" | sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging'
                         try {
-                            sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging \"docker stop train-schedule\""
-                            sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging \"docker rm train-schedule\""
+                            sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker stop train-schedule"'
+                            sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker rm train-schedule"'
                         } catch (err) {
                             echo: 'caught error: $err'
                         }
-                        sh "sshpass -p '$USERPASS' -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging \"docker run --restart always --name train-schedule -p 8080:8080 -d devaico/train-schedule:${env.BUILD_NUMBER}\""
+                        sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker run --restart always --name train-schedule -p 8080:8080 -d devaico/train-schedule:$d"'
                     }
                 }
             }
