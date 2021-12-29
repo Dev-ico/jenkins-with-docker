@@ -35,7 +35,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
                     script {
-                        sh "echo "docker pull devaico/train-schedule:${env.BUILD_NUMBER}" | sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging"
+                        sh 'echo "docker pull devaico/train-schedule:${env.BUILD_NUMBER}" | sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging'
                         try {
                             sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker stop train-schedule"'
                             sh 'sshpass -p $USERPASS -v ssh -o StrictHostKeyChecking=no $USERNAME@$staging "docker rm train-schedule"'
